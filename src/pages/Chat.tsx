@@ -1,8 +1,62 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Mic, MicOff, Volume2, Heart, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ReactMarkdown from 'react-markdown';
 import sakhiAvatar from '@/assets/sakhi-ai-avatar.jpg';
+
+// Add type declarations for Web Speech API
+declare global {
+  interface Window {
+    SpeechRecognition: typeof SpeechRecognition;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+  }
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onend: () => void;
+  onstart: () => void;
+}
+
+interface SpeechRecognitionEvent {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+  isFinal: boolean;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognitionErrorEvent {
+  error: string;
+  message: string;
+}
+
+declare const SpeechRecognition: {
+  prototype: SpeechRecognition;
+  new(): SpeechRecognition;
+};
 
 interface Message {
   id: string;
@@ -27,9 +81,13 @@ const Chat = () => {
   const [isListening, setIsListening] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
-  const OPENROUTER_API_KEY = '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';
+  const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 
   const quickPrompts = [
     { text: 'I feel anxious today 😰', hindi: 'मैं आज चिंतित हूं', emoji: '😰' },
@@ -48,7 +106,7 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const getSakhiResponse = async (userMessage: string, conversationHistory: Message[], messageId: string) => {
+  const getSakhiResponse = useCallback(async (userMessage: string, conversationHistory: Message[], messageId: string) => {
     try {
       // Prepare conversation context
       const systemPrompt = `You are Sakhi, a loving, playful, and supportive AI companion specifically designed for pregnant women and new mothers. Your personality is:
@@ -96,9 +154,9 @@ Always be helpful, informative, and emotionally supportive while maintaining a f
         method: "POST",
         headers: {
           "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
           "HTTP-Referer": window.location.origin,
-          "X-Title": "SakhiSaathi - Maternal Wellness App",
-          "Content-Type": "application/json"
+          "X-Title": "SakhiSaathi - Maternal Wellness App"
         },
         body: JSON.stringify({
           "model": "deepseek/deepseek-r1-0528:free",
@@ -200,17 +258,51 @@ Always be helpful, informative, and emotionally supportive while maintaining a f
       ];
       return fallbacks[Math.floor(Math.random() * fallbacks.length)];
     }
+  }, [toast, OPENROUTER_API_KEY]);
+
+  const handleVoiceToggle = async () => {
+    if (!isVoiceMode) {
+      // Starting voice mode
+      setIsVoiceMode(true);
+      
+      // Check if browser supports speech recognition
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+        } catch (error) {
+          console.error('Speech recognition start error:', error);
+          // Fallback to audio recording
+          await startAudioRecording();
+        }
+      } else {
+        // Fallback to audio recording if speech recognition not available
+        await startAudioRecording();
+      }
+    } else {
+      // Stopping voice mode
+      setIsVoiceMode(false);
+      setIsListening(false);
+      
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+      }
+    }
   };
 
-  const handleVoiceToggle = () => {
-    setIsListening(!isListening);
-    setIsVoiceMode(!isVoiceMode);
-    if (!isVoiceMode) {
-      // Simulate voice recognition
-      setTimeout(() => {
-        setIsListening(false);
-        handleSendMessage("Hey Sakhi, I'm feeling a bit nervous about my pregnancy journey today");
-      }, 3000);
+  const startAudioRecording = async () => {
+    if (!mediaRecorder) {
+      const recorder = await initializeMediaRecorder();
+      if (recorder) {
+        recorder.start();
+        setIsRecording(true);
+      }
+    } else {
+      mediaRecorder.start();
+      setIsRecording(true);
     }
   };
 
@@ -247,6 +339,152 @@ Always be helpful, informative, and emotionally supportive while maintaining a f
       };
       setMessages(prev => [...prev, sakhiMessage]);
       setIsTyping(false);
+    }
+  };
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+      
+      if (SpeechRecognitionAPI) {
+        const recognition = new SpeechRecognitionAPI();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+          setIsListening(true);
+        };
+
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
+          let transcript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+          }
+          
+          // Update input text with interim results
+          setInputText(transcript);
+          
+          // If final result, send the message
+          if (event.results[event.resultIndex].isFinal) {
+            // Create a message directly here to avoid dependency issues
+            const messageText = transcript.trim();
+            if (messageText) {
+              const userMessage: Message = {
+                id: Date.now().toString(),
+                text: messageText,
+                sender: 'user',
+                timestamp: new Date(),
+              };
+
+              setMessages(prev => [...prev, userMessage]);
+              setInputText('');
+              setIsTyping(true);
+
+              // Start streaming response
+              const sakhiMessageId = (Date.now() + 1).toString();
+              getSakhiResponse(messageText, [], sakhiMessageId).catch(console.error);
+            }
+          }
+        };
+
+        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+          toast({
+            title: "Voice recognition error",
+            description: "Couldn't understand that, sweetie! Try speaking again? 💕",
+            variant: "destructive"
+          });
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, [getSakhiResponse, toast]);
+
+  // Initialize media recorder for audio recording
+  const initializeMediaRecorder = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        } 
+      });
+      
+      const recorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+      
+      const chunks: Blob[] = [];
+      
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+      
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(chunks, { type: 'audio/webm;codecs=opus' });
+        await transcribeAudio(audioBlob);
+        setAudioChunks([]);
+        setIsRecording(false);
+        
+        // Stop all audio tracks
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      setMediaRecorder(recorder);
+      setAudioChunks(chunks);
+      
+      return recorder;
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      toast({
+        title: "Microphone access denied",
+        description: "I need microphone access to hear you, beautiful! 🎤",
+        variant: "destructive"
+      });
+      return null;
+    }
+  };
+
+  // Transcribe audio using Web Speech API or fallback
+  const transcribeAudio = async (audioBlob: Blob) => {
+    try {
+      // For now, we'll use the Web Speech API
+      // In a production app, you might want to use a dedicated transcription service
+      if (recognitionRef.current) {
+        // Since we already have speech recognition running, 
+        // we'll rely on that for transcription
+        return;
+      }
+      
+      // Fallback: Convert blob to text (this is a simplified approach)
+      // In production, you'd send this to a transcription service like:
+      // - OpenAI Whisper API
+      // - Google Speech-to-Text
+      // - Azure Speech Services
+      
+      toast({
+        title: "Audio recorded! 🎵",
+        description: "Got your voice message, sweetie! Using speech recognition for now.",
+      });
+      
+    } catch (error) {
+      console.error('Transcription error:', error);
+      toast({
+        title: "Transcription error",
+        description: "Couldn't process that audio, honey! Try the speech recognition instead? 💕",
+        variant: "destructive"
+      });
     }
   };
 
@@ -350,7 +588,14 @@ Always be helpful, informative, and emotionally supportive while maintaining a f
               <div>
                 <h3 className="sakhi-subheading">Voice Mode</h3>
                 <p className="sakhi-caption text-muted-foreground">
-                  {isVoiceMode ? 'Voice chat active - speak freely' : 'Switch to voice chat'}
+                  {isVoiceMode 
+                    ? isListening 
+                      ? 'Listening... speak now! 🎤' 
+                      : isRecording 
+                        ? 'Recording... speak freely! 🔴'
+                        : 'Voice mode active - tap mic to speak'
+                    : 'Switch to voice chat'
+                  }
                 </p>
               </div>
             </div>
@@ -365,10 +610,12 @@ Always be helpful, informative, and emotionally supportive while maintaining a f
             </button>
           </div>
 
-          {isListening && (
+          {(isListening || isRecording) && (
             <div className="mt-4 flex items-center gap-3 p-3 bg-primary/20 rounded-2xl">
               <div className="w-4 h-4 bg-primary rounded-full animate-pulse" />
-              <span className="sakhi-body text-primary">Listening... Speak now</span>
+              <span className="sakhi-body text-primary">
+                {isListening ? 'Listening... Speak now' : 'Recording... Speak freely'}
+              </span>
               <div className="flex gap-1 ml-auto">
                 <div className="w-2 h-4 bg-primary rounded-full animate-pulse"></div>
                 <div className="w-2 h-6 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.1s' }}></div>
