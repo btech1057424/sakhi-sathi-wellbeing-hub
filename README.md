@@ -1,73 +1,101 @@
-# Welcome to your Lovable project
+Great! For an **AICTE competition** focused on **rural maternal health**, a prototype that combines **mental wellness + hygiene healthcare** during pregnancy should address **accessibility, cultural sensitivity, low digital literacy, and resource limitations**.
 
-## Project info
+Here's a structured prototype idea for your **chat-based app**, followed by its core **features**, **UI/UX**, and **tech stack** suggestions:
 
-**URL**: https://lovable.dev/projects/7f9fa839-eba7-4000-9af1-944f324de6f4
+---
 
-## How can I edit this code?
+## 🧩 **Prototype Name: "SakhiSaathi" – Your Pregnancy Companion**
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🎯 **Purpose & Problem It Solves:**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7f9fa839-eba7-4000-9af1-944f324de6f4) and start prompting.
+* Bridge the **information and support gap** for pregnant women in **rural areas**.
+* Provide **mental health guidance**, **daily hygiene tips**, and **doctor reminders**.
+* Break stigma around **emotional well-being**, help detect early signs of **stress or depression**.
+* Accessible even on **low-end devices** and **low internet bandwidth**.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## 📱 **Key Features:**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🧠 **Mental Health Support**
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+* Daily **voice messages** & **chat prompts** for:
 
-Follow these steps:
+  * Mood tracking
+  * Breathing/relaxation exercises
+  * Positive affirmations
+* **Anonymous Chat** with AI chatbot trained to:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+  * Respond empathetically
+  * Offer support and guidance
+  * Escalate serious concerns to human volunteers/doctors
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 🧼 **Hygiene & Healthcare Education**
 
-# Step 3: Install the necessary dependencies.
-npm i
+* Local language **audio-visual content** on:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+  * Menstrual hygiene
+  * Bathing, clean clothes, safe toilet practices
+  * Food safety, handwashing, drinking water
+* **Customized reminders** (based on trimester) for:
 
-**Edit a file directly in GitHub**
+  * Doctor visits
+  * Iron/calcium/vaccine schedules
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 🌐 **Offline First, Vernacular Friendly**
 
-**Use GitHub Codespaces**
+* App auto-downloads **content bundles** for offline use
+* Available in **Hindi, Bengali, Tamil**, etc.
+* Option for **voice-based interaction** for semi-literate users
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 🏥 **Emergency & Helpline**
 
-## What technologies are used for this project?
+* One-click access to **local ASHA worker or PHC**
+* List of **nearby health camps** and **free transport** (if linked with govt)
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🎨 **UX Design (Simple & Friendly)**
 
-## How can I deploy this project?
+**Home Screen Tabs:**
 
-Simply open [Lovable](https://lovable.dev/projects/7f9fa839-eba7-4000-9af1-944f324de6f4) and click on Share -> Publish.
+* 📅 My Day (Tips + Mood check)
+* 💬 Chat with Sakhi AI
+* 🎧 Listen & Learn (hygiene videos)
+* 🛎 Reminders
+* 📞 Call for Help
 
-## Can I connect a custom domain to my Lovable project?
+> Designed for **one-hand use**, with **big buttons**, **color-coded alerts**, and **voice narration**.
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🛠️ **Tech Stack Suggestion:**
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+| Layer               | Tech                                                                       |
+| ------------------- | -------------------------------------------------------------------------- |
+| Frontend (App)      | Flutter (for Android, lightweight), React Native (optional)                |
+| Backend             | Firebase (Realtime DB + Auth), or Node.js                                  |
+| AI Chatbot          | GPT-like model with prompt tuning (or Rasa for offline), fallback to human |
+| Notifications       | Firebase Cloud Messaging                                                   |
+| Voice & Translation | Google Text-to-Speech, Bhashini API (Govt of India language model)         |
+| Data Security       | End-to-end encryption for chat, health data stored securely                |
+
+---
+
+## 🌱 **Scalability & Future Integration:**
+
+* Integrate with **Health ID (ABHA)** under Ayushman Bharat
+* Link with **ASHA workers' app** for better tracking
+* Collect anonymized data to help **Govt/NGOs** plan interventions
+
+---
+
+## 💡 Pitch Line:
+
+*"SakhiSaathi brings empathy, education, and empowerment to expecting mothers in rural India—where clean care and kind words can make all the difference."*
+
+---
+
+Would you like a Figma mockup design next? Or a presentation pitch deck for AICTE judges?
