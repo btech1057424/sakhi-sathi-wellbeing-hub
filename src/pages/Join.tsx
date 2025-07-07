@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, Heart, Shield, Globe } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import welcomeIllustration from '@/assets/welcome-illustration.jpg';
 
 const Join = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [formType, setFormType] = useState<'login' | 'signup'>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('hindi');
@@ -34,11 +36,63 @@ const Join = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Prepare form data for API
+      const purposeData = {
+        formType,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        language: currentLanguage,
+        timestamp: new Date().toISOString(),
+        ...(formType === 'signup' && { 
+          agreeToTerms: formData.agreeToTerms,
+          confirmPassword: formData.confirmPassword
+        })
+      };
+
+      // Send data to backend
+      const response = await fetch(
+        `https://hono-cloudflare-d1-backend.shraj.workers.dev/collect-email?email=${encodeURIComponent(formData.email)}&purpose=${encodeURIComponent(JSON.stringify(purposeData))}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.ok) {
+        // Success - show success message and navigate
+        toast({
+          title: formType === 'login' ? 'Welcome back!' : 'Account created successfully!',
+          description: formType === 'login' ? 'You have been logged in successfully.' : 'Your account has been created and you are now logged in.',
+        });
+        navigate('/home');
+      } else {
+        // Handle error
+        console.error('API call failed:', response.statusText);
+        toast({
+          title: 'Something went wrong',
+          description: 'Please try again later. You will be redirected to continue.',
+          variant: 'destructive',
+        });
+        // Still navigate to home for now (in production, might want to stay on form)
+        setTimeout(() => navigate('/home'), 2000);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: 'Connection error',
+        description: 'Unable to connect to server. You will be redirected to continue.',
+        variant: 'destructive',
+      });
+      // Still navigate to home for now (in production, might want to stay on form)
+      setTimeout(() => navigate('/home'), 2000);
+    } finally {
       setIsLoading(false);
-      navigate('/home');
-    }, 2000);
+    }
   };
 
   const isFormValid = () => {
@@ -301,7 +355,10 @@ const Join = () => {
               <span className="text-lg">📱</span>
               <span className="text-sm font-medium">Phone</span>
             </button>
-            <button className="flex items-center justify-center gap-2 py-3 px-4 border border-border rounded-xl hover:bg-muted/50 transition-colors">
+            <button 
+              onClick={() => navigate('/home')}
+              className="flex items-center justify-center gap-2 py-3 px-4 border border-border rounded-xl hover:bg-muted/50 transition-colors"
+            >
               <span className="text-lg">🎭</span>
               <span className="text-sm font-medium">Guest</span>
             </button>
