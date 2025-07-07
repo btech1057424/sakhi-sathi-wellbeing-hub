@@ -2,39 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* SakhiSaathi Design System - Warm, friendly, empowering colors for rural pregnant women
+All colors MUST be HSL. Warm beige/cream base with coral/soft pink accents.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Warm cream background instead of stark white */
+    --background: 45 50% 96%;
+    --foreground: 20 10% 25%; /* Charcoal instead of black */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Soft beige cards with warm undertones */
+    --card: 40 40% 94%;
+    --card-foreground: 20 10% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 40 40% 94%;
+    --popover-foreground: 20 10% 25%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Coral primary color for warmth and friendliness */
+    --primary: 345 85% 70%; /* Soft coral #FF7DA1 equivalent */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Light beige secondary */
+    --secondary: 35 30% 85%;
+    --secondary-foreground: 20 10% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted warm tones */
+    --muted: 35 25% 88%;
+    --muted-foreground: 20 10% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Warm accent color */
+    --accent: 15 80% 75%; /* Warm peach accent */
+    --accent-foreground: 20 10% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Emergency red for help button */
+    --destructive: 0 85% 60%; /* #FF3B3B equivalent */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Soft borders and inputs */
+    --border: 35 25% 82%;
+    --input: 35 25% 85%;
+    --ring: 345 85% 70%;
+
+    /* SakhiSaathi specific colors */
+    --sakhi-cream: 45 45% 92%; /* Main background cream */
+    --sakhi-beige: 35 30% 85%; /* Card backgrounds */
+    --sakhi-coral: 345 85% 70%; /* Primary coral */
+    --sakhi-peach: 15 80% 75%; /* Accent peach */
+    --sakhi-sage: 95 15% 70%; /* Calming sage green */
+    --sakhi-lavender: 260 25% 80%; /* Gentle lavender */
+    --sakhi-sunset: 25 85% 65%; /* Warm orange */
+
+    /* Emotional state colors for mood tracking */
+    --mood-happy: 50 85% 65%; /* Bright yellow */
+    --mood-calm: 95 35% 70%; /* Soft green */
+    --mood-anxious: 25 75% 65%; /* Warm orange */
+    --mood-sad: 220 25% 65%; /* Gentle blue */
+    --mood-energetic: 345 80% 70%; /* Vibrant coral */
 
     --radius: 0.5rem;
 
@@ -100,6 +124,66 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-nunito;
+  }
+}
+
+/* SakhiSaathi Custom Typography & Utilities */
+@layer components {
+  /* Typography for accessibility and warmth */
+  .sakhi-heading {
+    @apply text-2xl font-semibold text-foreground leading-relaxed;
+  }
+  
+  .sakhi-subheading {
+    @apply text-lg font-medium text-foreground/90 leading-relaxed;
+  }
+  
+  .sakhi-body {
+    @apply text-base text-foreground/80 leading-relaxed;
+  }
+  
+  .sakhi-caption {
+    @apply text-sm text-muted-foreground leading-relaxed;
+  }
+
+  /* Interactive elements with large touch targets */
+  .touch-friendly {
+    @apply min-h-12 min-w-12 p-3;
+  }
+
+  /* Voice interaction indicators */
+  .voice-enabled {
+    @apply relative after:absolute after:top-1 after:right-1 after:w-2 after:h-2 after:bg-primary after:rounded-full after:animate-pulse;
+  }
+
+  /* Offline indicators */
+  .offline-available {
+    @apply relative after:absolute after:top-0 after:right-0 after:w-3 after:h-3 after:bg-green-500 after:rounded-full after:border-2 after:border-background;
+  }
+
+  /* Mood emotion states */
+  .mood-happy { @apply bg-[hsl(var(--mood-happy))] text-foreground; }
+  .mood-calm { @apply bg-[hsl(var(--mood-calm))] text-foreground; }
+  .mood-anxious { @apply bg-[hsl(var(--mood-anxious))] text-foreground; }
+  .mood-sad { @apply bg-[hsl(var(--mood-sad))] text-foreground; }
+  .mood-energetic { @apply bg-[hsl(var(--mood-energetic))] text-foreground; }
+
+  /* SakhiSaathi branded elements */
+  .sakhi-card {
+    @apply bg-card border border-border rounded-2xl p-4 shadow-sm;
+  }
+
+  .sakhi-button-primary {
+    @apply bg-primary text-primary-foreground font-medium px-6 py-3 rounded-full touch-friendly hover:bg-primary/90 transition-colors;
+  }
+
+  .sakhi-button-secondary {
+    @apply bg-secondary text-secondary-foreground font-medium px-6 py-3 rounded-full touch-friendly hover:bg-secondary/80 transition-colors;
+  }
+
+  /* Emergency help button */
+  .emergency-help {
+    @apply fixed bottom-6 right-6 bg-destructive text-destructive-foreground p-4 rounded-full shadow-lg z-50 hover:bg-destructive/90 transition-all animate-pulse;
   }
 }

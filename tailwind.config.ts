@@ -18,6 +18,9 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				nunito: ['Nunito', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -51,6 +54,22 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				sakhi: {
+					cream: 'hsl(var(--sakhi-cream))',
+					beige: 'hsl(var(--sakhi-beige))',
+					coral: 'hsl(var(--sakhi-coral))',
+					peach: 'hsl(var(--sakhi-peach))',
+					sage: 'hsl(var(--sakhi-sage))',
+					lavender: 'hsl(var(--sakhi-lavender))',
+					sunset: 'hsl(var(--sakhi-sunset))'
+				},
+				mood: {
+					happy: 'hsl(var(--mood-happy))',
+					calm: 'hsl(var(--mood-calm))',
+					anxious: 'hsl(var(--mood-anxious))',
+					sad: 'hsl(var(--mood-sad))',
+					energetic: 'hsl(var(--mood-energetic))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
