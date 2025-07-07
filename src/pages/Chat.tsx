@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Mic, MicOff, Volume2, Heart } from 'lucide-react';
+import { Send, Mic, MicOff, Volume2, Heart, MessageSquare } from 'lucide-react';
 import sakhiAvatar from '@/assets/sakhi-ai-avatar.jpg';
 
 interface Message {
@@ -21,6 +21,7 @@ const Chat = () => {
   ]);
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -78,7 +79,14 @@ const Chat = () => {
 
   const handleVoiceToggle = () => {
     setIsListening(!isListening);
-    // Voice recognition would be implemented here
+    setIsVoiceMode(!isVoiceMode);
+    if (!isVoiceMode) {
+      // Simulate voice recognition
+      setTimeout(() => {
+        setIsListening(false);
+        handleSendMessage("I'm feeling a bit anxious about my pregnancy");
+      }, 3000);
+    }
   };
 
   return (
@@ -152,8 +160,45 @@ const Chat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Prompts */}
+      {/* Voice Mode Toggle */}
       <div className="p-4 bg-card/50 border-t border-border">
+        <div className="sakhi-card bg-gradient-to-r from-primary/10 to-sakhi-coral/10 mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <MessageSquare className="w-6 h-6 text-primary" />
+              <div>
+                <h3 className="sakhi-subheading">Voice Mode</h3>
+                <p className="sakhi-caption text-muted-foreground">
+                  {isVoiceMode ? 'Voice chat active - speak freely' : 'Switch to voice chat'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleVoiceToggle}
+              className={`p-3 rounded-full transition-all ${
+                isVoiceMode 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              }`}
+            >
+              {isVoiceMode ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+            </button>
+          </div>
+          
+          {isListening && (
+            <div className="mt-4 flex items-center gap-3 p-3 bg-primary/20 rounded-2xl">
+              <div className="w-4 h-4 bg-primary rounded-full animate-pulse" />
+              <span className="sakhi-body text-primary">Listening... Speak now</span>
+              <div className="flex gap-1 ml-auto">
+                <div className="w-2 h-4 bg-primary rounded-full animate-pulse"></div>
+                <div className="w-2 h-6 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.1s'}}></div>
+                <div className="w-2 h-8 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Quick Prompts */}
         <div className="flex gap-2 overflow-x-auto pb-2">
           {quickPrompts.map((prompt, index) => (
             <button
@@ -177,15 +222,18 @@ const Chat = () => {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Type your message... अपना संदेश लिखें..."
+              placeholder={isVoiceMode ? "Voice mode active... Tap mic to speak" : "Type your message... अपना संदेश लिखें..."}
               className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none sakhi-body"
+              disabled={isVoiceMode && isListening}
             />
             <button
               onClick={handleVoiceToggle}
               className={`p-2 rounded-full transition-all ${
                 isListening 
                   ? 'bg-destructive text-destructive-foreground animate-pulse' 
-                  : 'bg-primary/10 text-primary hover:bg-primary/20'
+                  : isVoiceMode 
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-primary/10 text-primary hover:bg-primary/20'
               }`}
             >
               {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}

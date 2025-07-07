@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Calendar, Heart, Smile, Cloud, Sun, Zap, Wifi, WifiOff, Volume2 } from 'lucide-react';
 import wellnessHands from '@/assets/wellness-hands.jpg';
 
@@ -170,8 +171,9 @@ const Home = () => {
         <h3 className="sakhi-subheading">Quick Actions</h3>
         
         {quickActions.map((action, index) => (
-          <div 
+          <Link 
             key={index}
+            to={action.path}
             className={`sakhi-card flex items-center gap-4 cursor-pointer hover:bg-card/80 transition-all ${
               action.offline ? 'offline-available' : ''
             }`}
@@ -190,8 +192,38 @@ const Home = () => {
                 <Volume2 className="w-4 h-4" />
               </button>
             </div>
-          </div>
+          </Link>
         ))}
+      </div>
+
+      {/* Period Tracker Card */}
+      <div className="sakhi-card bg-gradient-to-r from-sakhi-coral/20 to-sakhi-peach/20 border border-primary/20">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="p-3 rounded-full bg-primary/20">
+            <Calendar className="w-6 h-6 text-primary" />
+          </div>
+          <div className="flex-1">
+            <h3 className="sakhi-subheading text-primary">Period Tracker</h3>
+            <p className="sakhi-caption text-muted-foreground">माहवारी ट्रैकर</p>
+            <p className="sakhi-body">Track your cycle and connect with partner</p>
+          </div>
+          <Link to="/period-tracker" className="sakhi-button-primary px-4 py-2">
+            Track Now
+          </Link>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-3 bg-sakhi-sage/20 rounded-xl text-center">
+            <div className="text-2xl mb-1">🌸</div>
+            <p className="sakhi-caption text-muted-foreground">Cycle Day</p>
+            <p className="sakhi-body font-medium">14</p>
+          </div>
+          <div className="p-3 bg-sakhi-lavender/20 rounded-xl text-center">
+            <div className="text-2xl mb-1">💕</div>
+            <p className="sakhi-caption text-muted-foreground">Next Period</p>
+            <p className="sakhi-body font-medium">14 days</p>
+          </div>
+        </div>
       </div>
 
       {/* Today's Wellness Tip */}

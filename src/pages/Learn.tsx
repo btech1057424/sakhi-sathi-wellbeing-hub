@@ -194,7 +194,14 @@ const Learn = () => {
                     
                     <button className={`sakhi-button-primary px-4 py-2 ${
                       item.completed ? 'opacity-75' : ''
-                    }`}>
+                    }`} onClick={() => {
+                      const params = new URLSearchParams({
+                        type: item.type,
+                        title: item.title,
+                        titleHindi: item.titleHindi
+                      });
+                      window.location.href = `/learning-content?${params.toString()}`;
+                    }}>
                       <Play className="w-4 h-4 mr-2" />
                       {item.completed ? 'Review' : 'Start'}
                     </button>
