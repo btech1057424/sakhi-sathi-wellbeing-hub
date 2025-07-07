@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WelcomeScreen from '@/components/WelcomeScreen';
-import Layout from '@/components/Layout';
-import Home from './Home';
 
 const Index = () => {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -10,18 +8,15 @@ const Index = () => {
 
   const handleWelcomeComplete = () => {
     setShowWelcome(false);
-    navigate('/home');
+    navigate('/join');
   };
 
   if (showWelcome) {
     return <WelcomeScreen onComplete={handleWelcomeComplete} />;
   }
 
-  return (
-    <Layout>
-      <Home />
-    </Layout>
-  );
+  // This should never be reached as we navigate to /join
+  return null;
 };
 
 export default Index;

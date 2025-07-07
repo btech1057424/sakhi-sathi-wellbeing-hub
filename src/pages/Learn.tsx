@@ -192,7 +192,7 @@ const Learn = () => {
                       </button>
                     )}
                     
-                    <button className={`sakhi-button-primary px-4 py-2 ${
+                    <button className={`sakhi-button-primary px-2  flex items-center ${
                       item.completed ? 'opacity-75' : ''
                     }`} onClick={() => {
                       const params = new URLSearchParams({

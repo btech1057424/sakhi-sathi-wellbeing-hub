@@ -64,7 +64,7 @@ const Chat = () => {
         'You\'re doing wonderfully! Remember, every small step towards your health matters. 🌟',
         'Thank you for sharing that with me. Your feelings are valid and important. 🤗',
       ];
-      
+
       const sakhiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: responses[Math.floor(Math.random() * responses.length)],
@@ -94,8 +94,8 @@ const Chat = () => {
       {/* Chat Header */}
       <div className="bg-card border-b border-border p-4 flex items-center gap-3">
         <div className="w-12 h-12 rounded-full overflow-hidden">
-          <img 
-            src={sakhiAvatar} 
+          <img
+            src={sakhiAvatar}
             alt="Sakhi AI Assistant"
             className="w-full h-full object-cover"
           />
@@ -119,11 +119,10 @@ const Chat = () => {
             key={message.id}
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className={`max-w-xs sm:max-w-sm ${
-              message.sender === 'user' 
-                ? 'bg-primary text-primary-foreground ml-4' 
+            <div className={`max-w-xs sm:max-w-sm ${message.sender === 'user'
+                ? 'bg-primary text-primary-foreground ml-4'
                 : 'bg-card mr-4'
-            } rounded-2xl px-4 py-3 shadow-sm`}>
+              } rounded-2xl px-4 py-3 shadow-sm`}>
               {message.sender === 'sakhi' && (
                 <div className="flex items-center gap-2 mb-2">
                   <Heart className="w-4 h-4 text-primary" />
@@ -131,17 +130,16 @@ const Chat = () => {
                 </div>
               )}
               <p className="sakhi-body leading-relaxed">{message.text}</p>
-              <p className={`text-xs mt-2 ${
-                message.sender === 'user' 
-                  ? 'text-primary-foreground/70' 
+              <p className={`text-xs mt-2 ${message.sender === 'user'
+                  ? 'text-primary-foreground/70'
                   : 'text-muted-foreground'
-              }`}>
+                }`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
           </div>
         ))}
-        
+
         {isTyping && (
           <div className="flex justify-start">
             <div className="bg-card rounded-2xl px-4 py-3 shadow-sm mr-4">
@@ -151,8 +149,8 @@ const Chat = () => {
               </div>
               <div className="flex items-center gap-1 mt-2">
                 <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
             </div>
           </div>
@@ -175,24 +173,23 @@ const Chat = () => {
             </div>
             <button
               onClick={handleVoiceToggle}
-              className={`p-3 rounded-full transition-all ${
-                isVoiceMode 
-                  ? 'bg-primary text-primary-foreground' 
+              className={`p-3 rounded-full transition-all ${isVoiceMode
+                  ? 'bg-primary text-primary-foreground'
                   : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
+                }`}
             >
               {isVoiceMode ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
             </button>
           </div>
-          
+
           {isListening && (
             <div className="mt-4 flex items-center gap-3 p-3 bg-primary/20 rounded-2xl">
               <div className="w-4 h-4 bg-primary rounded-full animate-pulse" />
               <span className="sakhi-body text-primary">Listening... Speak now</span>
               <div className="flex gap-1 ml-auto">
                 <div className="w-2 h-4 bg-primary rounded-full animate-pulse"></div>
-                <div className="w-2 h-6 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.1s'}}></div>
-                <div className="w-2 h-8 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                <div className="w-2 h-6 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-8 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
               </div>
             </div>
           )}
@@ -228,13 +225,12 @@ const Chat = () => {
             />
             <button
               onClick={handleVoiceToggle}
-              className={`p-2 rounded-full transition-all ${
-                isListening 
-                  ? 'bg-destructive text-destructive-foreground animate-pulse' 
-                  : isVoiceMode 
+              className={`p-2 rounded-full transition-all ${isListening
+                  ? 'bg-destructive text-destructive-foreground animate-pulse'
+                  : isVoiceMode
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-primary/10 text-primary hover:bg-primary/20'
-              }`}
+                }`}
             >
               {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
             </button>
@@ -247,7 +243,7 @@ const Chat = () => {
             <Send className="w-5 h-5" />
           </button>
         </div>
-        
+
         <p className="sakhi-caption text-center text-muted-foreground mt-2">
           Speak or type in Hindi/English • हिंदी/अंग्रेजी में बोलें या लिखें
         </p>
