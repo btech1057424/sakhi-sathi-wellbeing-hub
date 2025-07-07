@@ -3,7 +3,16 @@
   "description": "Your voice, your care, your companion – SakhiSaathi provides mental wellness support and hygiene education for pregnant women in rural India",
   "private": true,
   "version": "1.0.0",
+  "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/btech1057424/sakhi-sathi-wellbeing-hub.git"
+  },
+  "homepage": "https://sakhisaathi.org",
+  "bugs": {
+    "url": "https://github.com/btech1057424/sakhi-sathi-wellbeing-hub/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",

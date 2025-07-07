@@ -95,7 +95,7 @@ const PeriodTracker = () => {
                 <Heart className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="sakhi-body font-medium text-green-800">Connected with Rahul</p>
+                <p className="sakhi-body font-medium text-green-800">Connected with Shaswat</p>
                 <p className="sakhi-caption text-green-600">Your partner can see your mood and cycle</p>
               </div>
             </div>
